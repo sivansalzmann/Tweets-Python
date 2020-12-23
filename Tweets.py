@@ -3,18 +3,18 @@
 import numpy as np
 import pandas as pd
 import csv
+from collections import Counter
 
-
-# class Tweet:
-#     id = 0
-#     user = 0
-#     fullname = 0
-#     url = 0
-#     timestemp = 0
-#     replies = 0
-#     likes = 0
-#     retweets = 0
-#     text = 0
+class Tweet:
+    id = 0
+    user = 0
+    fullname = 0
+    url = 0
+    timestemp = 0
+    replies = 0
+    likes = 0
+    retweets = 0
+    text = 0
 
 # my_data = open('Stweets.csv',encoding="utf8").read()
 # arr = np.frombuffer(my_data, dtype="<U3")
@@ -63,11 +63,19 @@ with open("Stweets.csv", newline='', encoding='utf-8') as f:
     #
     # def hashtagValidation(self):
     #
-    # def mostUsedHahtags(self): #dont forget add symbol
-    #
+    def mostUsedHahtags(self): #dont forget add symbol
+        words_to_count = (word for word in tweetsList if word[:1].isupper())
+        c = Counter(words_to_count)
+        print
+        c.most_common(3)
     # #second task
-    # def usersOfMonth(self):
-    #
+    def usersOfMonth(self,month,year):
+        if(self.timestamp==year)
+            if(self.timestamp==month)
+                words_to_count = (word for word in tweetsList if word[:1].isupper())
+                c = Counter(words_to_count)
+                print
+                c.most_common(3)
     # def usernameValisation(self):
     #
     # def mostMentionUsername(self): #dont forget add symbol
