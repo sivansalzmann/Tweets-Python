@@ -18,11 +18,13 @@ import csv
 
 # my_data = open('Stweets.csv',encoding="utf8").read()
 # arr = np.frombuffer(my_data, dtype="<U3")
-
+with open("Stweets.csv", newline='', encoding='utf-8') as f:
+    tweets = csv.DictReader(f, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 #npcsv = np.genfromtxt('Stweets.csv', delimiter=';', encoding='utf8',usecols=np.arange(0,1),dtype=str)
-npcsv = np.genfromtxt('Stweets.csv', delimiter=';', encoding='utf8',skip_header=10,usecols=np.arange(0,1),dtype=str)
-print(npcsv)
-
+#npcsv = np.genfromtxt('Stweets.csv', delimiter=';', encoding='utf8',skip_header=10,usecols=np.arange(0,1),dtype=str)
+#print(npcsv)
+#my_file = open('Stweets.csv', 'r', encoding='utf-8')
+ #   my_file.print("עכיחלךלחיעכג")
 # with open("Stweets.csv", "rt") as csvfile:
 #     csvreader = csv.reader(csvfile, delimiter=",")
 #
