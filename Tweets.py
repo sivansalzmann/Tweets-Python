@@ -1,34 +1,90 @@
 #!/usr/bin/env python
 # coding: utf-8
+import collections
+
 import numpy as np
 import pandas as pd
 import csv
+import re
+import datetime
 
 
-# class Tweet:
-#     id = 0
-#     user = 0
-#     fullname = 0
-#     url = 0
-#     timestemp = 0
-#     replies = 0
-#     likes = 0
-#     retweets = 0
-#     text = 0
 
-# my_data = open('Stweets.csv',encoding="utf8").read()
-# arr = np.frombuffer(my_data, dtype="<U3")
+def summary(file_path):
+    array = []
+    with open(file_path, newline='', encoding='utf-8',errors='ignore') as f:
+        reader = csv.DictReader(f, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for row in reader:
+            array = np.append(array,row)
+        return array
 
-#npcsv = np.genfromtxt('Stweets.csv', delimiter=';', encoding='utf8',usecols=np.arange(0,1),dtype=str)
-npcsv = np.genfromtxt('Stweets.csv', delimiter=';', encoding='utf8',skip_header=10,usecols=np.arange(0,1),dtype=str)
-print(npcsv)
+def splitHashtag(str):
+    btc = re.compile(r'(#bitcoin|#btc|#bitcoins)',re.I)
+    hashtags = list()
+    x = str.get('text')
+    hashtags.append(re.findall(r'(?i)\#\w+', x))
+    for j in hashtags:
+        filtered = [i for i in j if not btc.match(i)]
+    return filtered
 
-# with open("Stweets.csv", "rt") as csvfile:
-#     csvreader = csv.reader(csvfile, delimiter=",")
-#
-#     for row in csvreader:
-#         row = [entry.decode("utf8") for entry in row]
-#         print(": ".join(row))
+
+def splitAndFindMax(array,month):
+    l = list()
+    maxList = list()
+    for i in array:
+        x = i.get('timestamp')
+        y = datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S+%f')
+        if y.month == month:
+            l.append(splitHashtag(i))
+    maxList.append(findMaxHashtag(l))
+    return maxList
+
+
+def findMaxHashtag(l):
+    newL = list()
+    for i in l:
+        for j in i:
+            newL.append(j)
+    counter = 0
+    num = newL[0]
+    for i in newL:
+        curr_frequency = newL.count(i)
+        if (curr_frequency > counter):
+            counter = curr_frequency
+            num = i
+    return num
+
+def findMaxUser(l):
+    newL = list()
+    for i in l:
+        for j in i:
+            newL.append(j)
+    counter = 0
+    num = newL[0]
+    for i in newL:
+        curr_frequency = newL.count(i)
+        if (curr_frequency > counter):
+            counter = curr_frequency
+            num = i
+    return num
+
+def saveToCSV(fiePathIn,filePathOut):
+    s = summary(fiePathIn)
+    with open(filePathOut, 'w') as csvFile:
+        writer = csv.writer(csvFile, delimiter=",", lineterminator='\n')
+        writer.writerow(["Month","Hashtag","Mention","Website"])
+        for i in range(1,13):
+            writer.writerow([str(i),splitAndFindMax(s,i)])
+
+
+
+
+x = saveToCSV("Stweets.csv","tweet-data.csv")
+#splitToMonthes(x)
+#print(splitToMonthesreturnMax(x,4))
+#print(vaildHashtag(x))
+#splitHashtag(x)
+
 
 
     # def __init__(self):
