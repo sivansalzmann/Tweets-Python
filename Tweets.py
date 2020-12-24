@@ -26,17 +26,21 @@ def splitHashtag(str):
     return filtered
 
 
-def splitHashtagByMonthMax(array,month):
+def splitHashtagByMonthMax(array,month,year):
     split =[]
     for i in array:
         x = i.get('timestamp')
         y = datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S+%f')
-        if y.month == month:
+        if y.month == month and y.year == year:
             x = splitHashtag(i)
             split = np.append(split,x,axis=0)
-    maxEle = findMaxHashtag(split)
-    return maxEle
 
+        if split.size != 0:
+            maxEle = findMaxHashtag(split)
+        else:
+            maxEle = "None"
+
+    return maxEle.encode("utf-8")
 
 
 def findMaxHashtag(npArray):
@@ -52,23 +56,28 @@ def findMaxHashtag(npArray):
             ele = i
     return ele
 
+
 def splitUser(str):
-    for i in str:
-        users = np.array(str.get('user'))
+    user = re.compile(r'\B\@([\w\-]+)')
+    x = str.get('text')
+    users = np.array(re.findall(user, x))
     return users
 
 
-def splitUserByMonthMax(array,month):
+def splitUserByMonthMax(array,month,year):
     split =[]
+    maxEle = 0
     for i in array:
         x = i.get('timestamp')
         y = datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S+%f')
-        if y.month == month:
+        if y.month == month and y.year == year:
             x = splitUser(i)
-            #print(x)
             split = np.append(split,x)
-    maxEle = findMaxUser(split)
-    return maxEle
+    if split.size != 0:
+        maxEle = findMaxUser(split)
+    else:
+        maxEle = "None"
+    return maxEle.encode("utf-8")
 
 def findMaxUser(npArray):
     l = list()
@@ -91,13 +100,13 @@ def splitWeb(npArray):
     return webs
 
 
-def splitWebByMonthMax(array,month):
+def splitWebByMonthMax(array,month,year):
     split =[]
     maxEle = 0
     for i in array:
         x = i.get('timestamp')
         y = datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S+%f')
-        if y.month == month:
+        if y.month == month and y.year == year:
             x = splitWeb(i)
             split = np.append(split,x)
     if split.size != 0:
@@ -120,83 +129,47 @@ def findMaxWeb(npArray):
             ele = i
     return ele
 
+def getTime(row):
+    x = row.get('timestamp')
+    y = datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S+%f')
+    return y
 
-def saveToCSV(fiePathIn,filePathOut):
-    s = summary(fiePathIn)
+
+def saveToCSV(filePathIn,filePathOut):
+    s = summary(filePathIn)
     with open(filePathOut, 'w') as csvFile:
         writer = csv.writer(csvFile, delimiter=",", lineterminator='\n')
         writer.writerow(["Month","Hashtag","Mention","Website"])
-        for i in range(1,13):
-            writer.writerow([str(i),splitHashtagByMonthMax(s,i),splitUserByMonthMax(s,i),splitWebByMonthMax(s,i)])
+        df = pd.DataFrame({"Month":[],"Hashtag":[],"Mention":[],"Website":[]})
+        for i in s:
+            date = getTime(i)
+            dateStr = str(date.year) + "-" + str(date.month)
+            # df.insert(0,"Month",dateStr)
+            # writer.writerow([str(i),splitHashtagByMonthMax(s,i),splitUserByMonthMax(s,i),splitWebByMonthMax(s,i)])
+            # writer.writerow([str(dateStr), splitHashtagByMonthMax(s, date.month,date.year), splitUserByMonthMax(s, date.month,date.year), splitWebByMonthMax(s,date.month,date.year)])
+            # df = pd.DataFrame({"Month" : [dateStr]})
+            # print(df)
+            #print(df.groupby(['Month']).agg(pd.Series.mode))
+        #print(df)
 
 
 
 
 x = saveToCSV("Stweets.csv","tweet-data.csv")
 #x = summary("Stweets.csv")
-# y = splitUserByMonthMax(x,5)
-#y = splitByMonth(x,5)
+#getTime(x)
+# for i in x:
+#     print(i)
+#     getTime(x)
+# y = splitUserByMonthMax(x,10,2017)
+# print(y)
+#y = splitWebByMonthMax(x,5,2018)
 #print(splitToMonthesreturnMax(x,4))
 #print(vaildHashtag(x))
 #splitHashtag(x)
 #findMaxHashtag(y)
 #print(splitWeb(x))
 #print(splitWebByMonthMax(x,6))
-
-
-
-    # def __init__(self):
-    #     #constractur
-    #
-    # def setTweets(self):
-    #
-    # def getId(self):
-    #
-    # def getUser(self):
-    #
-    # def getFullname(self):
-    #
-    # def getUrl(self):
-    #
-    # def getTimestemp(self):
-    #
-    # def getReplies(self):
-    #
-    # def getLikes(self):
-    #
-    # def getRetweets(self):
-    #
-    # def getText(self):
-    #
-    # #first task
-    # def textOfMonth(self):
-    #
-    # def findSigns(self,sign): #uses for hashtag and website
-    #
-    # def hashtagValidation(self):
-    #
-    # def mostUsedHahtags(self): #dont forget add symbol
-    #
-    # #second task
-    # def usersOfMonth(self):
-    #
-    # def usernameValisation(self):
-    #
-    # def mostMentionUsername(self): #dont forget add symbol
-    #
-    # #third task
-    # def websiteOfMonth(self):
-    #
-    # def websiteValisation(self):
-    #
-    # def mostMentionWebsite(self): #dont forget remove things
-    #
-    # def dateFormat(self): #help to save to csv just month wnd year
-    #
-    # def checkRowValidation(self): # put value None
-    #
-    # def saveToCsv(self): #save res to csv
-
 
 
 
