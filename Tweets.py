@@ -27,9 +27,7 @@ def splitHashtag(str):
 
 
 def splitHashtagByMonthMax(array,month):
-    #print(array)
     split =[]
-    maxes = []
     for i in array:
         x = i.get('timestamp')
         y = datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S+%f')
@@ -61,9 +59,7 @@ def splitUser(str):
 
 
 def splitUserByMonthMax(array,month):
-    #print(array)
     split =[]
-    maxes = []
     for i in array:
         x = i.get('timestamp')
         y = datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S+%f')
@@ -97,13 +93,17 @@ def splitWeb(npArray):
 
 def splitWebByMonthMax(array,month):
     split =[]
+    maxEle = 0
     for i in array:
         x = i.get('timestamp')
         y = datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S+%f')
         if y.month == month:
             x = splitWeb(i)
             split = np.append(split,x)
-    maxEle = findMaxWeb(split)
+    if split.size != 0:
+        maxEle = findMaxWeb(split)
+    else:
+        maxEle = "None"
     return maxEle
 
 def findMaxWeb(npArray):
@@ -111,10 +111,8 @@ def findMaxWeb(npArray):
     for i in npArray:
         l.append(i)
     del l[1::2]
-    print(l)
     counter = 0
     ele = l[0]
-    #print(ele)
     for i in l:
         curr_frequency = l.count(i)
         if (curr_frequency > counter):
@@ -122,8 +120,7 @@ def findMaxWeb(npArray):
             ele = i
     return ele
 
-# def makeNoArrayOfMax():
-#
+
 def saveToCSV(fiePathIn,filePathOut):
     s = summary(fiePathIn)
     with open(filePathOut, 'w') as csvFile:
@@ -135,8 +132,8 @@ def saveToCSV(fiePathIn,filePathOut):
 
 
 
-#x = saveToCSV("Stweets.csv","tweet-data.csv")
-x = summary("Stweets.csv")
+x = saveToCSV("Stweets.csv","tweet-data.csv")
+#x = summary("Stweets.csv")
 # y = splitUserByMonthMax(x,5)
 #y = splitByMonth(x,5)
 #print(splitToMonthesreturnMax(x,4))
@@ -144,7 +141,7 @@ x = summary("Stweets.csv")
 #splitHashtag(x)
 #findMaxHashtag(y)
 #print(splitWeb(x))
-print(splitWebByMonthMax(x,5))
+#print(splitWebByMonthMax(x,6))
 
 
 
