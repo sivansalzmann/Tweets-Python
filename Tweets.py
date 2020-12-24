@@ -20,53 +20,41 @@ def summary(file_path):
 
 def splitHashtag(str):
     btc = re.compile(r'(#bitcoin|#btc|#bitcoins)',re.I)
-    hashtags = list()
     x = str.get('text')
-    hashtags.append(re.findall(r'(?i)\#\w+', x))
-    for j in hashtags:
-        filtered = [i for i in j if not btc.match(i)]
+    hashtags = np.array(re.findall(r'(?i)\#\w+', x))
+    filtered = [i for i in hashtags if not btc.match(i)]
+    #print(filtered)
     return filtered
 
 
-def splitAndFindMax(array,month):
-    l = list()
-    maxList = list()
+def splitHashtagByMonthMax(array,month):
+    #print(array)
+    split =[]
+    maxes = []
     for i in array:
         x = i.get('timestamp')
         y = datetime.datetime.strptime(x, '%Y-%m-%d %H:%M:%S+%f')
         if y.month == month:
-            l.append(splitHashtag(i))
-    maxList.append(findMaxHashtag(l))
-    return maxList
+            x = splitHashtag(i)
+            split = np.append(split,x,axis=0)
+    maxEle = findMaxHashtag(split)
+    return maxEle
 
 
-def findMaxHashtag(l):
-    newL = list()
-    for i in l:
-        for j in i:
-            newL.append(j)
+
+def findMaxHashtag(npArray):
+    l = list()
+    for i in npArray:
+        l.append(i)
     counter = 0
-    num = newL[0]
-    for i in newL:
-        curr_frequency = newL.count(i)
+    ele = l[0]
+    for i in l:
+        curr_frequency = l.count(i)
         if (curr_frequency > counter):
             counter = curr_frequency
-            num = i
-    return num
+            ele = i
+    return ele
 
-def findMaxUser(l):
-    newL = list()
-    for i in l:
-        for j in i:
-            newL.append(j)
-    counter = 0
-    num = newL[0]
-    for i in newL:
-        curr_frequency = newL.count(i)
-        if (curr_frequency > counter):
-            counter = curr_frequency
-            num = i
-    return num
 
 def saveToCSV(fiePathIn,filePathOut):
     s = summary(fiePathIn)
@@ -74,16 +62,18 @@ def saveToCSV(fiePathIn,filePathOut):
         writer = csv.writer(csvFile, delimiter=",", lineterminator='\n')
         writer.writerow(["Month","Hashtag","Mention","Website"])
         for i in range(1,13):
-            writer.writerow([str(i),splitAndFindMax(s,i)])
+            writer.writerow([str(i),splitHashtagByMonthMax(s,i)])
 
 
 
 
 x = saveToCSV("Stweets.csv","tweet-data.csv")
-#splitToMonthes(x)
+#x = summary("Stweets.csv")
+#y = splitByMonth(x,5)
 #print(splitToMonthesreturnMax(x,4))
 #print(vaildHashtag(x))
 #splitHashtag(x)
+#findMaxHashtag(y)
 
 
 
