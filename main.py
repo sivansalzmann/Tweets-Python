@@ -3,7 +3,6 @@ import numpy as np
 import csv
 import time
 
-
 def findMax(dates, name):
     if bool(dates[name]):
         max = 0
@@ -34,54 +33,47 @@ def countTimes(data, nameOfCat, reStatments):
 
 
 def saveSummary(filePath, dictDates, listDates):
-    try:
-        with open(filePath, "w", encoding='utf8') as csvFile:
-            csvFile.write("Month,Hashtag,Mention,Website\n")
-            dateNpArray = np.array(listDates)
-            dateNpArray.sort()
-            for date in dateNpArray:
-                csvFile.write(date)
-                csvFile.write(",")
-                csvFile.write(findMax(dictDates[date], "hashTags"))
-                csvFile.write(",")
-                csvFile.write(findMax(dictDates[date], "mentions"))
-                csvFile.write(",")
-                csvFile.write(findMax(dictDates[date], "webs"))
-                csvFile.write("\n")
-    except:
-        print("Error-The file path is not vaild")
+    with open(filePath, "w", encoding='utf8') as csvFile:
+        csvFile.write("Month,Hashtag,Mention,Website\n")
+        dateNpArray = np.array(listDates)
+        dateNpArray.sort()
+        for date in dateNpArray:
+            csvFile.write(date)
+            csvFile.write(",")
+            csvFile.write(findMax(dictDates[date], "hashTags"))
+            csvFile.write(",")
+            csvFile.write(findMax(dictDates[date], "mentions"))
+            csvFile.write(",")
+            csvFile.write(findMax(dictDates[date], "webs"))
+            csvFile.write("\n")
 
 
 def summary(filePath):
-    try:
-        dataDict = {}
-        listDates = []
-        hash = "#([\w-]+)"
-        ment = "@[\w-]+"
-        web = "https*://([^/\s]*)"
-        with open(filePath, "r", encoding='utf8', errors='ignore') as read_file:
-            tweets = csv.DictReader(read_file, delimiter=';')
-            for row in tweets:
-                tweet = dict(row)["timestamp"][:7]
-                hashTags = re.finditer(hash, dict(row)["text"])
-                mentions = re.finditer(ment, dict(row)["text"])
-                webs = re.finditer(web, dict(row)["text"])
-                if dataDict.get(tweet) == None:
-                    listDates.append(tweet)
-                    hashTagDict = {}
-                    mentionsDict = {}
-                    websDict = {}
-                    dataDict.update({tweet: {"hashTags": hashTagDict, "mentions": mentionsDict, "webs": websDict}})
-                countTimes(dataDict[tweet], "hashTags", hashTags)
-                countTimes(dataDict[tweet], "mentions", mentions)
-                countTimes(dataDict[tweet], "webs", webs)
-        return dataDict, listDates
-    except:
-        print("Error-The file path is not vaild")
-
+    dataDict = {}
+    listDates = []
+    hash = "#([\w-]+)"
+    ment = "@[\w-]+"
+    web = "https*://([^/\s]*)"
+    with open(filePath, "r", encoding='utf8', errors='ignore') as read_file:
+        tweets = csv.DictReader(read_file, delimiter=';')
+        for row in tweets:
+            tweet = dict(row)["timestamp"][:7]
+            hashTags = re.finditer(hash, dict(row)["text"])
+            mentions = re.finditer(ment, dict(row)["text"])
+            webs = re.finditer(web, dict(row)["text"])
+            if dataDict.get(tweet) == None:
+                listDates.append(tweet)
+                hashTagDict = {}
+                mentionsDict = {}
+                websDict = {}
+                dataDict.update({tweet: {"hashTags": hashTagDict, "mentions": mentionsDict, "webs": websDict}})
+            countTimes(dataDict[tweet], "hashTags", hashTags)
+            countTimes(dataDict[tweet], "mentions", mentions)
+            countTimes(dataDict[tweet], "webs", webs)
+    return dataDict, listDates
 
 if __name__ == "__main__":
     start_time = time.time()
-    dataDict, listDates = summary("Stweets.csv")
+    dataDict, listDates = summary("tweets.csv")
     saveSummary("tweet-data.csv", dataDict, listDates)
     print("--- %s seconds ---" % (time.time() - start_time))
