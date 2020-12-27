@@ -1,9 +1,15 @@
 import re
 import numpy as np
 import csv
-import time
+
 
 def findMax(dates, name):
+    """
+    This function return the max shown value in category by date
+    :param dates:
+    :param name:
+    :return: maxVal and None if there isn`t good data in the date
+    """
     if bool(dates[name]):
         max = 0
         maxVal = "None"
@@ -17,6 +23,11 @@ def findMax(dates, name):
 
 
 def countTimes(data, nameOfCat, reStatments):
+    """
+    :param data:
+    :param nameOfCat:
+    :param reStatments:
+    """
     for i in reStatments:
         if nameOfCat == "webs":
             string = i.group(1)
@@ -32,8 +43,14 @@ def countTimes(data, nameOfCat, reStatments):
             data[nameOfCat][string] += 1
 
 
-def saveSummary(filePath, dictDates, listDates):
-    with open(filePath, "w", encoding='utf8') as csvFile:
+def saveSummary(filePathIn,filePathOut):
+    """
+    This function save the results of the required functions to new CSV file called tweet-data.csv
+    :param filePathIn:
+    :param filePathOut:
+    """
+    dictDates, listDates = summary(filePathIn)
+    with open(filePathOut, "w", encoding='utf8') as csvFile:
         csvFile.write("Month,Hashtag,Mention,Website\n")
         dateNpArray = np.array(listDates)
         dateNpArray.sort()
@@ -49,6 +66,14 @@ def saveSummary(filePath, dictDates, listDates):
 
 
 def summary(filePath):
+    """
+    This function read data from csv file called tweets.csv and separate the data to by the specific instructions:
+    hashTags
+    mentions
+    webs
+    :param filePath:
+    :return: dataDict, listDates
+    """
     dataDict = {}
     listDates = []
     hash = "#([\w-]+)"
@@ -72,8 +97,6 @@ def summary(filePath):
             countTimes(dataDict[tweet], "webs", webs)
     return dataDict, listDates
 
+
 if __name__ == "__main__":
-    start_time = time.time()
-    dataDict, listDates = summary("tweets.csv")
-    saveSummary("tweet-data.csv", dataDict, listDates)
-    print("--- %s seconds ---" % (time.time() - start_time))
+    saveSummary("tweets.csv","tweet-data.csv")
